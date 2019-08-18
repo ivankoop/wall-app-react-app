@@ -1,10 +1,15 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import React from "react";
+import renderer from "react-test-renderer";
+import {MonoText} from "../StyledText";
 
-import { MonoText } from '../StyledText';
+describe("MonoText", () => {
+    beforeEach(() => {
+        console.error = jest.fn();
+    });
 
-it(`renders correctly`, () => {
-  const tree = renderer.create(<MonoText>Snapshot test!</MonoText>).toJSON();
-
-  expect(tree).toMatchSnapshot();
+    it("renders MonoText", () => {
+        jest.useFakeTimers();
+        const tree = renderer.create(<MonoText/>).toJSON();
+        expect(tree).toMatchSnapshot();
+    });
 });

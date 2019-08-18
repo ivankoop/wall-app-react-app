@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`MonoText renders MonoText 1`] = `
 <Text
   style={
     Array [
@@ -10,7 +10,5 @@ exports[`renders correctly 1`] = `
       },
     ]
   }
->
-  Snapshot test!
-</Text>
+/>
 `;
