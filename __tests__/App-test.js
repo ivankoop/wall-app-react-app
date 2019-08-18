@@ -5,6 +5,7 @@ import App from "../App";
 describe("App", () => {
     beforeEach(() => {
         console.error = jest.fn();
+
     });
 
     it("renders App", () => {
