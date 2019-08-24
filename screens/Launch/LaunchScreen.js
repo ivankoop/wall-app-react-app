@@ -30,7 +30,7 @@ export default class LaunchScreen extends Component {
 
         if (!accessToken) {
             this.setState({loading: false});
-            navigation.navigate("Onboarding");
+            navigation.navigate("Auth");
         } else {
             const refreshToken = await AsyncStorage.getItem("refreshToken");
 
@@ -55,7 +55,7 @@ export default class LaunchScreen extends Component {
         const {navigation} = this.props;
         console.info("SCREEN SWTICH");
         // TODO: check screen
-        // navigation.navigate("Home");
+        navigation.navigate("Home");
     }
 
     render() {

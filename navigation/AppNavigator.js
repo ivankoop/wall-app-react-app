@@ -5,7 +5,8 @@ import {
     createStackNavigator,
 } from "react-navigation";
 import LaunchScreen from "../screens/Launch/LaunchScreen";
-import OnboardingScreen from "../screens/Onboarding/OnboardingScreen";
+import SignInScreen from "../screens/Onboarding/SignInScreen";
+import SignUpScreen from "../screens/Onboarding/SignUpScreen";
 import HomeScreen from "../screens/Home/HomeScreen";
 
 const AuthConfig = {
@@ -17,8 +18,11 @@ const AuthConfig = {
 
 const AuthStack = createStackNavigator(
     {
-        Onboarding: {
-            screen: OnboardingScreen,
+        SignIn: {
+            screen: SignInScreen,
+        },
+        SignUp: {
+            screen: SignUpScreen,
         },
     },
     AuthConfig

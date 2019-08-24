@@ -6,7 +6,8 @@ import {Platform, StatusBar, StyleSheet, View, Text} from "react-native";
 import {Provider} from "react-redux";
 import store from "./store";
 import AppNavigator from "./navigation/AppNavigator";
-
+import TopAlert from "./components/TopAlert/TopAlert";
+import MiddleLoader from "./components/MiddleLoader/MiddleLoader";
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
 
@@ -27,6 +28,8 @@ export default function App(props) {
                 <View style={styles.container}>
                     {Platform.OS === "ios" && <StatusBar barStyle="default" />}
                     <AppNavigator />
+                    <MiddleLoader />
+                    <TopAlert />
                 </View>
             </Provider>
         );

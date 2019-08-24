@@ -138,6 +138,6 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 12,
         marginRight: 20,
-        fontFamily: "montserrat-medium",
+        fontFamily: "Roboto_medium",
     },
 });
