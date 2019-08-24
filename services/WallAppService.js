@@ -6,6 +6,7 @@ export const WallAppService = {
     refreshAuth,
     logout,
     register,
+    getPosts,
 };
 
 const {apiUrl} = getEnvVars();
@@ -66,6 +67,19 @@ function register(name, lastName, password, email) {
     };
 
     return fetch(`${apiUrl}user`, requestOptions)
+        .then(handleResponse)
+        .then(data => {
+            return data;
+        });
+}
+
+function getPosts() {
+    const requestOptions = {
+        method: "GET",
+        headers: {"Content-Type": "application/json"},
+    };
+
+    return fetch(`${apiUrl}posts`, requestOptions)
         .then(handleResponse)
         .then(data => {
             return data;

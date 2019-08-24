@@ -23,6 +23,7 @@
     "expo-font": "^5.0.1",
     "expo-linear-gradient": "^5.0.1",
     "expo-web-browser": "^5.0.0",
+    "moment": "^2.24.0",
     "native-base": "^2.13.5",
     "prop-types": "^15.7.2",
     "react": "16.8.3",

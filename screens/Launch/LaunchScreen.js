@@ -45,6 +45,7 @@ export default class LaunchScreen extends Component {
                 },
                 error => {
                     console.info("REFRESH ERROR", error);
+                    navigation.navigate("Auth");
                     this.setState({loading: false});
                 }
             );
