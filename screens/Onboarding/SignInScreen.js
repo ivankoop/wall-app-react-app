@@ -90,12 +90,17 @@ class SignInScreen extends Component {
         await AsyncStorage.setItem("accessToken", data.accessToken);
         await AsyncStorage.setItem("refreshToken", data.refreshToken);
 
-        navigation.navigate("Home");
+        navigation.navigate("Home", {authed: true});
     };
 
     _onSignUp = () => {
         const {navigation} = this.props;
         navigation.navigate("SignUp");
+    };
+
+    _onReadPosts = () => {
+        const {navigation} = this.props;
+        navigation.navigate("Home", {authed: false});
     };
 
     render() {
@@ -156,8 +161,20 @@ class SignInScreen extends Component {
                                 </Item>
                                 <Item style={styles.item}>
                                     <TouchableOpacity
+                                        onPress={this._onReadPosts}
+                                        style={{
+                                            flex: 1,
+                                            marginTop: 20,
+                                            alignSelf: "flex-start",
+                                        }}
+                                    >
+                                        <Text style={styles.readPostsText}>
+                                            Read posts
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
                                         onPress={this._onSignUp}
-                                        style={{width: "100%", marginTop: 20}}
+                                        style={{flex: 2, marginTop: 20}}
                                     >
                                         <Text style={styles.registerText}>
                                             Don't have an Account?
@@ -231,6 +248,13 @@ const styles = StyleSheet.create({
         fontFamily: "Roboto_medium",
     },
 
+    readPostsText: {
+        color: "white",
+        alignSelf: "flex-end",
+        textDecorationLine: "underline",
+        fontFamily: "Roboto_medium",
+    },
+
     registerText: {
         color: "white",
         alignSelf: "center",
@@ -256,6 +280,7 @@ const styles = StyleSheet.create({
 
     item: {
         borderColor: "transparent",
+        flexDirection: "row",
     },
 
     text: {

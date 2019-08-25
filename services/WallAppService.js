@@ -7,6 +7,7 @@ export const WallAppService = {
     logout,
     register,
     getPosts,
+    createPost,
 };
 
 const {apiUrl} = getEnvVars();
@@ -73,6 +74,7 @@ function register(name, lastName, password, email) {
         });
 }
 
+// get all posts
 function getPosts() {
     const requestOptions = {
         method: "GET",
@@ -81,6 +83,27 @@ function getPosts() {
 
     return fetch(`${apiUrl}posts`, requestOptions)
         .then(handleResponse)
+        .then(data => {
+            return data;
+        });
+}
+
+// create a post, using auth interceptor
+async function createPost(text) {
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify({
+            text: text,
+        }),
+    };
+
+    return fetch(`${apiUrl}posts`, requestOptions)
+        .then(response => handleAuthResponse(response, createPost))
         .then(data => {
             return data;
         });

@@ -1,24 +1,28 @@
 import React, {Component} from "react";
+
+import {Form, Item, Input, Button} from "native-base";
+import PropTypes from "prop-types";
+import {connect} from "react-redux";
+import {LinearGradient} from "expo-linear-gradient";
+import {WallAppService} from "../../services/WallAppService";
+import {getWallPosts, insertPost} from "../../redux/actions/wallpost.actions";
+import {
+    showMiddleLoader,
+    hideMiddleLoader,
+} from "../../components/MiddleLoader/actions/middleloader.actions";
+import {showTopAlert} from "../../components/TopAlert/actions/topalert.actions";
 import {
     StyleSheet,
-    Image,
-    AsyncStorage,
     View,
     StatusBar,
-    ActivityIndicator,
-    TouchableOpacity,
+    KeyboardAvoidingView,
     Text,
     ScrollView,
     RefreshControl,
     SafeAreaView,
     Dimensions,
+    Keyboard,
 } from "react-native";
-import PropTypes from "prop-types";
-import {connect} from "react-redux";
-import {LinearGradient} from "expo-linear-gradient";
-import {WallAppService} from "../../services/WallAppService";
-
-import {getWallPosts} from "../../redux/actions/wallpost.actions";
 
 import moment from "moment";
 
@@ -27,13 +31,19 @@ class HomeScreen extends Component {
         super(props);
     }
 
-    state = {};
+    state = {
+        newPost: "",
+    };
 
     static propTypes = {
         getWallPosts: PropTypes.func,
         wallPosts: PropTypes.array,
         wallPostsLoading: PropTypes.bool,
         navigation: PropTypes.object,
+        showTopAlert: PropTypes.func,
+        showMiddleLoader: PropTypes.func,
+        hideMiddleLoader: PropTypes.func,
+        insertPost: PropTypes.func,
     };
 
     componentDidMount() {
@@ -52,8 +62,53 @@ class HomeScreen extends Component {
         getWallPosts();
     };
 
+    _onSubmit = () => {
+        const {newPost} = this.state;
+        const {
+            showMiddleLoader,
+            hideMiddleLoader,
+            showTopAlert,
+            insertPost,
+        } = this.props;
+
+        if (newPost === "") {
+            return;
+        }
+
+        Keyboard.dismiss();
+        showMiddleLoader();
+        this.setState({newPost: ""});
+
+        WallAppService.createPost(newPost).then(
+            data => {
+                hideMiddleLoader();
+                insertPost(data.post);
+            },
+            error => {
+                hideMiddleLoader();
+
+                const {response} = error;
+
+                if (error === 500 || error === 502) {
+                    showTopAlert("error", `(${error}) - Internal Server Error`);
+                    return;
+                }
+
+                showTopAlert("error", `(${response.status}) - Client Error`);
+            }
+        );
+    };
+
+    _onSignIn = () => {
+        const {navigation} = this.props;
+        navigation.navigate("Auth");
+    };
+
     render() {
-        const {wallPostsLoading, wallPosts} = this.props;
+        const {wallPostsLoading, wallPosts, navigation} = this.props;
+        const {newPost} = this.state;
+
+        const {authed} = navigation.state.params;
 
         return (
             <LinearGradient
@@ -75,12 +130,49 @@ class HomeScreen extends Component {
                         {wallPosts.map((item, index) =>
                             this.renderWallPost(item, index)
                         )}
-
-                        <Text style={styles.text}>Home Screen</Text>
-                        <TouchableOpacity onPress={this._onLogOut}>
-                            <Text style={{color: "white"}}>Log Out</Text>
-                        </TouchableOpacity>
                     </ScrollView>
+                    {authed ? (
+                        <KeyboardAvoidingView behavior="position" enabled>
+                            <Form>
+                                <Item style={styles.inputCont}>
+                                    <Input
+                                        style={styles.textInput}
+                                        placeholder="Write something..."
+                                        autoCompleteType="email"
+                                        placeholderTextColor="grey"
+                                        returnKeyType={"send"}
+                                        value={newPost}
+                                        onChangeText={value => {
+                                            this.setState({newPost: value});
+                                        }}
+                                        onSubmitEditing={this._onSubmit}
+                                        ref={input => {
+                                            this.input = input;
+                                        }}
+                                    />
+                                    <Button
+                                        onPress={this._onSubmit}
+                                        style={styles.sendButton}
+                                    >
+                                        <Text style={styles.sendButtonText}>
+                                            Send
+                                        </Text>
+                                    </Button>
+                                </Item>
+                            </Form>
+                        </KeyboardAvoidingView>
+                    ) : (
+                        <View style={styles.signInCont}>
+                            <Button
+                                onPress={this._onSignIn}
+                                style={styles.singInButton}
+                            >
+                                <Text style={styles.signInButtonText}>
+                                    Sign In to write posts
+                                </Text>
+                            </Button>
+                        </View>
+                    )}
                 </SafeAreaView>
             </LinearGradient>
         );
@@ -125,6 +217,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         getWallPosts: () => dispatch(getWallPosts()),
+        showMiddleLoader: () => dispatch(showMiddleLoader()),
+        hideMiddleLoader: () => dispatch(hideMiddleLoader()),
+        showTopAlert: () => dispatch(showTopAlert()),
+        insertPost: post => dispatch(insertPost(post)),
     };
 };
 
@@ -144,6 +240,67 @@ const styles = StyleSheet.create({
 
     scrollView: {
         width: "100%",
+    },
+
+    signInCont: {
+        backgroundColor: "#009CD8",
+        marginLeft: 0,
+        paddingLeft: 16,
+        paddingRight: 16,
+        paddingTop: 16,
+        paddingBottom: 16,
+    },
+
+    singInButton: {
+        width: "100%",
+        backgroundColor: "#004560",
+        height: 45,
+    },
+
+    signInButtonText: {
+        width: "100%",
+        textAlign: "center",
+        color: "white",
+        fontSize: width * 0.044,
+        fontFamily: "Roboto_medium",
+    },
+
+    inputCont: {
+        borderColor: "transparent",
+        flexDirection: "row",
+        backgroundColor: "#009CD8",
+        marginLeft: 0,
+        paddingLeft: 16,
+        paddingTop: 10,
+    },
+
+    textInput: {
+        color: "#004560",
+        fontFamily: "Roboto_medium",
+        backgroundColor: "white",
+        borderRadius: 5,
+        height: 45,
+        marginBottom: 10,
+        flex: 4,
+    },
+
+    sendButton: {
+        flex: 1,
+        height: 45,
+        marginTop: 3,
+        marginRight: 16,
+        marginLeft: 8,
+        borderRadius: 5,
+        marginBottom: 10,
+        backgroundColor: "#004560",
+    },
+
+    sendButtonText: {
+        width: "100%",
+        fontSize: width * 0.04,
+        color: "white",
+        fontFamily: "Roboto_medium",
+        textAlign: "center",
     },
 
     wallPostMainCont: {

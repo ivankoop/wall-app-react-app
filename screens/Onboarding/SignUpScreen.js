@@ -93,7 +93,7 @@ class SignUpScreen extends Component {
         await AsyncStorage.setItem("accessToken", data.accessToken);
         await AsyncStorage.setItem("refreshToken", data.refreshToken);
 
-        navigation.navigate("Home");
+        navigation.navigate("Home", {authed: true});
     };
 
     _onSignIn = () => {
