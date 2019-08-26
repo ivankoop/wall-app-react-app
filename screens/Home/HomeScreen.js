@@ -11,6 +11,7 @@ import {
     hideMiddleLoader,
 } from "../../components/MiddleLoader/actions/middleloader.actions";
 import {showTopAlert} from "../../components/TopAlert/actions/topalert.actions";
+import {Ionicons} from "@expo/vector-icons";
 import {
     StyleSheet,
     View,
@@ -22,6 +23,7 @@ import {
     SafeAreaView,
     Dimensions,
     Keyboard,
+    Alert,
 } from "react-native";
 
 import moment from "moment";
@@ -104,6 +106,27 @@ class HomeScreen extends Component {
         navigation.navigate("Auth");
     };
 
+    _onLogOut = () => {
+        Alert.alert(
+            "Log Out",
+            "",
+            [
+                {
+                    text: "Yes",
+                    onPress: async () => {
+                        const {navigation} = this.props;
+                        await WallAppService.logout();
+                        navigation.navigate("Home", {authed: false});
+                    },
+                },
+                {
+                    text: "No",
+                },
+            ],
+            {cancelable: false}
+        );
+    };
+
     render() {
         const {wallPostsLoading, wallPosts, navigation} = this.props;
         const {newPost} = this.state;
@@ -116,6 +139,7 @@ class HomeScreen extends Component {
                 style={styles.mainContainer}
             >
                 <StatusBar barStyle="dark-content" />
+
                 <SafeAreaView style={{flex: 1, width: "100%"}}>
                     <ScrollView
                         style={styles.scrollView}
@@ -172,6 +196,18 @@ class HomeScreen extends Component {
                                 </Text>
                             </Button>
                         </View>
+                    )}
+                    {authed && (
+                        <Button
+                            onPress={this._onLogOut}
+                            style={styles.logOutBtn}
+                        >
+                            <Ionicons
+                                name="md-log-out"
+                                color="white"
+                                style={{fontSize: 20}}
+                            ></Ionicons>
+                        </Button>
                     )}
                 </SafeAreaView>
             </LinearGradient>
@@ -249,6 +285,17 @@ const styles = StyleSheet.create({
         paddingRight: 16,
         paddingTop: 16,
         paddingBottom: 16,
+    },
+
+    logOutBtn: {
+        position: "absolute",
+        width: 50,
+        height: 50,
+        top: "7%",
+        backgroundColor: "#004560",
+        right: "5%",
+        borderRadius: 50,
+        justifyContent: "center",
     },
 
     singInButton: {

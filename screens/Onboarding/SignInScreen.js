@@ -177,7 +177,7 @@ class SignInScreen extends Component {
                                         style={{flex: 2, marginTop: 20}}
                                     >
                                         <Text style={styles.registerText}>
-                                            Don't have an Account?
+                                            Don&apos;t have an Account?
                                         </Text>
                                     </TouchableOpacity>
                                 </Item>
