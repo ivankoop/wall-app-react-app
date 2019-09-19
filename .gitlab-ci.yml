@@ -1,0 +1,43 @@
+image: node:alpine
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ~/.npm
+
+stages:
+  - test
+  - deploy
+  
+# Unit Tests
+unit:
+    stage: test
+    only:
+      - staging
+      - /^feature-.+/
+      - /^fix-.+/
+    cache:
+      paths:
+          - ./node_modules/
+    before_script:
+      - npm ci
+    script:
+      - npx jest --ci
+
+# Expo Deploy
+expo-deployments:
+    stage: deploy
+    only:
+      - staging
+    before_script:
+      - sysctl fs.inotify.max_user_watches=524288
+      - sysctl -p
+      - npm ci
+      - npm i expo-cli -g
+    script:
+      - export EXPO_DEBUG=true
+      - apk add --no-cache bash
+      - expo-cli login -u $EXPO_USERNAME -p $EXPO_PASSWORD --non-interactive
+      - expo-cli publish --release-channel staging --non-interactive
+    after_script:
+      - expo-cli logout
+    when: manual
